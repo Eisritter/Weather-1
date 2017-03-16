@@ -24,6 +24,7 @@ import java.util.Locale;
 //Класс ресурсов не нужно импортировать, он доступен сам по себе по имени R
 import ru.weather.eisritter.R;
 
+//Добавить функциональность SwipeRefreshLayout типа такого https://habrahabr.ru/post/218365/
 //Готовьтесь, будем ещё виджет пилить
 public class MainActivity extends AppCompatActivity {
     //Почему они открытые? Нарушаете принципы ООП
