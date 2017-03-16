@@ -14,6 +14,11 @@ import java.net.URL;
 
 import ru.weather.eisritter.R;
 
+/*
+    Формирование URL на основании настроек в SharedPreferences
+    Все константы сделать именованными (public static final <тип> <ИМЯ> = <значение>;)
+ */
+
 public class WeatherData {
 
     private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?q=%s&units=metric";
@@ -29,7 +34,9 @@ public class WeatherData {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
             StringBuffer json = new StringBuffer(1024);
+            //Зачем пустая строка? Почему не просто null, даже IDE подсказывает это reduntant(избыточно)
             String tmp = "";
+            //Имеет ли смысл добавлять перевод строки?
             while ((tmp = bufferedReader.readLine()) != null)
                 json.append(tmp).append("\n");
             bufferedReader.close();

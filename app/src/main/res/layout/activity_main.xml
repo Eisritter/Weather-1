@@ -13,6 +13,12 @@
     android:orientation="vertical"
     tools:context="ru.goodibunakov.eisritter.MainActivity"
     android:weightSum="1">
+    <!--
+    Нет у Вас такого класса
+    tools:context="ru.goodibunakov.eisritter.MainActivity"
+    Теперь я знаю откуда это взято
+    https://github.com/goodibunakov/WeatherApp
+    -->
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"

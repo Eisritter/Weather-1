@@ -21,11 +21,13 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
-
+//Класс ресурсов не нужно импортировать, он доступен сам по себе по имени R
 import ru.weather.eisritter.R;
 
+//Готовьтесь, будем ещё виджет пилить
 public class MainActivity extends AppCompatActivity {
-
+    //Почему они открытые? Нарушаете принципы ООП
+    //Если присваивание 1 раз, то можно сделать их final
     Handler handler;
     TextView city;
     TextView temp;
@@ -44,11 +46,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         temp = (TextView) findViewById(R.id.temperature);
+        //Вынести в строковые ресурсы
         temp.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/HelveticaNeueCyr-UltraLight.otf"));
         sky = (TextView) findViewById(R.id.sky);
         sky.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/weather.ttf"));
         gradus = (TextView) findViewById(R.id.gradus);
         gradus.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/HelveticaNeueCyr-UltraLight.otf"));
+        //Может вынести в строковые ресурсы или сделать именованной константой?
         gradus.setText("\u00b0C");
         detailsText = (TextView) findViewById(R.id.details);
         city = (TextView) findViewById(R.id.city);
@@ -71,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //Есть Activity для этих целей
+    //https://developer.android.com/reference/android/preference/PreferenceActivity.html
     //показать диалог выбора города
     private void showInputDialog() {
         AlertDialog.Builder chooseCity = new AlertDialog.Builder(this);
@@ -92,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Обновление/загрузка погодных данных
     private void updateWeatherData(final String city) {
+        //Не много ли потоков будет создано? Возьмите ThreadPool, нет?
         new Thread() {
             public void run() {
                 final JSONObject json = WeatherData.getJSONData(MainActivity.this, city);
@@ -113,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
+    //Все ключи ("name" и т. п.) сделайте как именованные константы
+    //А строки формата вынесите в ресурсы так как они могут изменяться в зависимости от локали
     //Обработка загруженных данных
     private void renderWeather(JSONObject json) {
         try {
@@ -121,18 +130,21 @@ public class MainActivity extends AppCompatActivity {
 
             JSONObject details = json.getJSONArray("weather").getJSONObject(0);
             JSONObject main = json.getJSONObject("main");
+            //Локаль берите не US, а ту которая предоставляет система
             detailsText.setText(details.getString("description").toUpperCase(Locale.US) + "\n" + getResources().getString(R.string.humidity)
                     + ": " + main.getString("humidity") + "%" + "\n" + getResources().getString(R.string.pressure)
                     + ": " + main.getString("pressure") + " hPa");
             detailsText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
             detailsText.setLineSpacing(0,1.4f);
 
             temp.setText(String.format("%.1f", main.getDouble("temp")));
 
             DateFormat df = DateFormat.getDateTimeInstance();
+            //Каков смысл константы 1000?
             String updatedOn = df.format(new Date(json.getLong("dt") * 1000));
             data.setText(getResources().getString(R.string.last_update) + " " + updatedOn);
-
+            //Каков смысл константы 1000? Это та же самая 1000 что и выше?
             setWeatherIcon(details.getInt("id"), json.getJSONObject("sys").getLong("sunrise") * 1000,
                     json.getJSONObject("sys").getLong("sunset") * 1000);
 
@@ -144,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
     //Подстановка нужной иконки
     private void setWeatherIcon(int actualId, long sunrise, long sunset) {
         int id = actualId / 100;
+        //Что происходит с переменной icon? (полагаю что тут ещё ведётся работа)
         String icon = "";
         if (actualId == 800) {
             long currentTime = new Date().getTime();

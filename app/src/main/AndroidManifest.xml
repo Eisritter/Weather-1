@@ -7,6 +7,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!--Зачем screenOrientation="true"? Сделайте разную компоновку Activity-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
