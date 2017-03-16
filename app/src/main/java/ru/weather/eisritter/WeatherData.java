@@ -11,7 +11,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+//Лишний импорт
 import ru.weather.eisritter.R;
 
 /*

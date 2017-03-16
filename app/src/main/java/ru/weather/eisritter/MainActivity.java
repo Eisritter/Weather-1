@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
     //Подстановка нужной иконки
     private void setWeatherIcon(int actualId, long sunrise, long sunset) {
         int id = actualId / 100;
-        //Что происходит с переменной icon? (полагаю что тут ещё ведётся работа)
         String icon = "";
         if (actualId == 800) {
             long currentTime = new Date().getTime();
