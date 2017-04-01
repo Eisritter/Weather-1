@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,22 +22,21 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
-//Класс ресурсов не нужно импортировать, он доступен сам по себе по имени R
-import ru.weather.eisritter.R;
 
-//Добавить функциональность SwipeRefreshLayout типа такого https://habrahabr.ru/post/218365/
-//Готовьтесь, будем ещё виджет пилить
+
+
+//Добавить функциональность SwipeRefreshLayout
 public class MainActivity extends AppCompatActivity {
-    //Почему они открытые? Нарушаете принципы ООП
-    //Если присваивание 1 раз, то можно сделать их final
-    Handler handler;
-    TextView city;
-    TextView temp;
-    TextView sky;
-    TextView gradus;
-    TextView detailsText;
-    TextView data;
 
+   private Handler handler;
+   private TextView city;
+   private TextView temp;
+   private TextView sky;
+   private TextView gradus;
+   private TextView detailsText;
+   private TextView data;
+
+    private SwipeRefreshLayout mSwipeLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
         detailsText = (TextView) findViewById(R.id.details);
         city = (TextView) findViewById(R.id.city);
         data = (TextView) findViewById(R.id.data);
-
         updateWeatherData(new CityPreference(MainActivity.this).getCity());
-    }
 
+
+    }
     //меню
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -191,3 +191,4 @@ public class MainActivity extends AppCompatActivity {
         sky.setText(icon);
     }
 }
+

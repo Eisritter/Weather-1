@@ -11,15 +11,17 @@ import android.content.SharedPreferences;
     Задание API-ключа
     Вынести имена ключей в именованные константы типа public static final String PREF_CITY = "city";
  */
-class CityPreference {
 
-    //Вспомогательный класс для хранения выбранного города
+class CityPreference {
+    public static final String PREF_CITY="city";
+
+
     SharedPreferences prefs;
 
     CityPreference(Activity activity) {
         prefs = activity.getPreferences(Activity.MODE_PRIVATE);
     }
-    // Возвращаем город по умолчанию, если SharedPreferences пустые
+
     String getCity() {
         return prefs.getString("city", "Komsomolsk-na-Amure");
     }
