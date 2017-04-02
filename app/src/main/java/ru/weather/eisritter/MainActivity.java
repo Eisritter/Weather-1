@@ -17,51 +17,70 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+//Класс ресурсов не нужно импортировать, он доступен сам по себе по имени R
 
 
+//Добавить функциональность SwipeRefreshLayout типа такого https://habrahabr.ru/post/218365/
+//Готовьтесь, будем ещё виджет пилить
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    //Почему они открытые? Нарушаете принципы ООП
+    //Если присваивание 1 раз, то можно сделать их final
+    private static final String NAME="name";
+    private static final String SYS="sys";
+    private static final String WEATHER="weather";
+    private static final String COUNTRY="country";
+    private static final String MAIN="main";
+    private static final String HUMIDITY="humidity";
+    private static final String DESCRIPTION="description";
+    private static final String PRESSURE="pressure";
+    private static final String TEMP="temp";
+    private static final String SUNRISE="sunrise";
+    private static final String DT="dt";
+    private static final String ID="id";
+    private static final String SUNSET="sunset";
+    private static final String GRADUS="\u00b0C";
+    private Handler handler;
+    private TextView city;
+    private TextView temp;
+    private TextView sky;
+    private TextView gradus;
+    private TextView detailsText;
+    private TextView data;
 
-//Добавить функциональность SwipeRefreshLayout
-public class MainActivity extends AppCompatActivity {
-
-   private Handler handler;
-   private TextView city;
-   private TextView temp;
-   private TextView sky;
-   private TextView gradus;
-   private TextView detailsText;
-   private TextView data;
-
-    private SwipeRefreshLayout mSwipeLayout;
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         handler = new Handler();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         temp = (TextView) findViewById(R.id.temperature);
         //Вынести в строковые ресурсы
-        temp.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/HelveticaNeueCyr-UltraLight.otf"));
+        temp.setTypeface(Typeface.createFromAsset(getAssets(), getResources().getString(R.string.fonts_helvetica_neue_cyr)));
         sky = (TextView) findViewById(R.id.sky);
-        sky.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/weather.ttf"));
+        sky.setTypeface(Typeface.createFromAsset(getAssets(), getResources().getString(R.string.fonts_weather)));
         gradus = (TextView) findViewById(R.id.gradus);
-        gradus.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/HelveticaNeueCyr-UltraLight.otf"));
+        gradus.setTypeface(Typeface.createFromAsset(getAssets(), getResources().getString(R.string.fonts_helvetica_neue_cyr)));
         //Может вынести в строковые ресурсы или сделать именованной константой?
-        gradus.setText("\u00b0C");
+        gradus.setText(GRADUS);
         detailsText = (TextView) findViewById(R.id.details);
         city = (TextView) findViewById(R.id.city);
         data = (TextView) findViewById(R.id.data);
+
         updateWeatherData(new CityPreference(MainActivity.this).getCity());
-
-
     }
+
     //меню
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,54 +119,58 @@ public class MainActivity extends AppCompatActivity {
     //Обновление/загрузка погодных данных
     private void updateWeatherData(final String city) {
         //Не много ли потоков будет создано? Возьмите ThreadPool, нет?
-        new Thread() {
-            public void run() {
-                final JSONObject json = WeatherData.getJSONData(MainActivity.this, city);
-                if (json == null) {
-                    handler.post(new Runnable() {
-                        public void run() {
-                            Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.place_not_found),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } else {
-                    handler.post(new Runnable() {
-                        public void run() {
-                            renderWeather(json);
-                        }
-                    });
-                }
+
+        final JSONObject json;
+        try {
+            WeatherData wd=new WeatherData(MainActivity.this);
+            wd.execute(city);
+            json = wd.get();
+
+            if (json == null) {
+                Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.place_not_found),
+                        Toast.LENGTH_LONG).show();
+            } else {
+                renderWeather(json);
             }
-        }.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     //Все ключи ("name" и т. п.) сделайте как именованные константы
     //А строки формата вынесите в ресурсы так как они могут изменяться в зависимости от локали
+
+
     //Обработка загруженных данных
     private void renderWeather(JSONObject json) {
         try {
-            city.setText(json.getString("name").toUpperCase(Locale.US) + ", "
-                    + json.getJSONObject("sys").getString("country"));
+            city.setText(json.getString(NAME).toUpperCase(Locale.getDefault()) + ", "
+                    + json.getJSONObject(SYS).getString(COUNTRY));
 
-            JSONObject details = json.getJSONArray("weather").getJSONObject(0);
-            JSONObject main = json.getJSONObject("main");
+            JSONObject details = json.getJSONArray(WEATHER).getJSONObject(0);
+            JSONObject main = json.getJSONObject(MAIN);
             //Локаль берите не US, а ту которая предоставляет система
-            detailsText.setText(details.getString("description").toUpperCase(Locale.US) + "\n" + getResources().getString(R.string.humidity)
-                    + ": " + main.getString("humidity") + "%" + "\n" + getResources().getString(R.string.pressure)
-                    + ": " + main.getString("pressure") + " hPa");
+            detailsText.setText(details.getString(DESCRIPTION).toUpperCase(Locale.getDefault()) + "\n" + getResources().getString(R.string.humidity)
+                    + ": " + main.getString(HUMIDITY) + "%" + "\n" + getResources().getString(R.string.pressure)
+                    + ": " + main.getString(PRESSURE) + " hPa");
             detailsText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
             detailsText.setLineSpacing(0,1.4f);
 
-            temp.setText(String.format("%.1f", main.getDouble("temp")));
+            temp.setText(String.format("%.1f", main.getDouble(TEMP)));
 
             DateFormat df = DateFormat.getDateTimeInstance();
             //Каков смысл константы 1000?
-            String updatedOn = df.format(new Date(json.getLong("dt") * 1000));
+            String updatedOn = df.format(new Date(json.getLong(DT) *1000));
             data.setText(getResources().getString(R.string.last_update) + " " + updatedOn);
             //Каков смысл константы 1000? Это та же самая 1000 что и выше?
-            setWeatherIcon(details.getInt("id"), json.getJSONObject("sys").getLong("sunrise") * 1000,
-                    json.getJSONObject("sys").getLong("sunset") * 1000);
+            setWeatherIcon(details.getInt(ID), json.getJSONObject(SYS).getLong(SUNRISE) * 1000,
+                    json.getJSONObject(SYS).getLong(SUNSET) * 1000);
 
         } catch (Exception e) {
             Log.e("Weather", "One or more fields not found in the JSON data");
@@ -190,5 +213,18 @@ public class MainActivity extends AppCompatActivity {
         }
         sky.setText(icon);
     }
-}
 
+    @Override
+    public void onRefresh() {
+        mSwipeRefreshLayout.setRefreshing(true);
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                updateWeatherData(new CityPreference(MainActivity.this).getCity());
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+    }
+}

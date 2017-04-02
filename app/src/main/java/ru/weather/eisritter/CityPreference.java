@@ -13,21 +13,20 @@ import android.content.SharedPreferences;
  */
 
 class CityPreference {
-    public static final String PREF_CITY="city";
-
-
+    public static final String CITY = "city";
+    //Вспомогательный класс для хранения выбранного города
     SharedPreferences prefs;
 
     CityPreference(Activity activity) {
         prefs = activity.getPreferences(Activity.MODE_PRIVATE);
     }
-
+    // Возвращаем город по умолчанию, если SharedPreferences пустые
     String getCity() {
-        return prefs.getString("city", "Komsomolsk-na-Amure");
+        return prefs.getString(CITY, "Komsomolsk-na-Amure");
     }
 
     void setCity(String city) {
-        prefs.edit().putString("city", city).apply();
+        prefs.edit().putString(CITY, city).apply();
     }
 }
 
