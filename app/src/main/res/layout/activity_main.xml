@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,14 +18,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/gradient"
     android:orientation="vertical"
-    tools:context="ru.goodibunakov.eisritter.MainActivity"
+
     android:weightSum="1">
-    <!--
-    Нет у Вас такого класса
-    tools:context="ru.goodibunakov.eisritter.MainActivity"
-    Теперь я знаю откуда это взято
-    https://github.com/goodibunakov/WeatherApp
-    -->
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -95,3 +96,4 @@
         android:paddingTop="@dimen/for_gradus_padding"/>
 
 </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
