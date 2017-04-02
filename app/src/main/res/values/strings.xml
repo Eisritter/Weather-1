@@ -4,6 +4,9 @@
     <string name="last_update">Последнее обновление</string>
     <string name="ok" translatable="false">OK</string>
 
+    <string name="fonts_helvetica_neue_cyr">fonts/HelveticaNeueCyr-UltraLight.otf</string>
+    <string name="fonts_weather">fonts/weather.ttf</string>
+
     <string name="weather_sunny" translatable="false">&#xf00d;</string>
     <string name="weather_clear_night" translatable="false">&#xf02e;</string>
     <string name="weather_foggy" translatable="false">&#xf014;</string>
